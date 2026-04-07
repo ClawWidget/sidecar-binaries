@@ -85,6 +85,26 @@ jobs:
               .sidecars["pandoc"].platforms["darwin-x86_64"].url = $u_intel | .sidecars["pandoc"].platforms["darwin-x86_64"].sha256 = $h_intel | .sidecars["pandoc"].platforms["darwin-x86_64"].size_bytes = ($s_intel|tonumber)' manifest.json > tmp.json && mv tmp.json manifest.json
           rm pandoc_arm.zip pandoc_intel.zip
 
+      - name: Update ExifTool
+        run: |
+          # 1. Scrape the official site for the latest tar.gz version
+          HTML=$(curl -sL https://exiftool.org/)
+          TAR_FILE=$(echo "$HTML" | grep -oE 'Image-ExifTool-[0-9]+\.[0-9]+\.tar\.gz' | head -n 1)
+          VERSION=$(echo "$TAR_FILE" | grep -oE '[0-9]+\.[0-9]+')
+          URL="https://exiftool.org/$TAR_FILE"
+
+          # 2. Download and hash
+          curl -sL "$URL" -o exiftool.tar.gz
+          HASH=$(sha256sum exiftool.tar.gz | awk '{print $1}')
+          SIZE=$(stat -c%s exiftool.tar.gz)
+
+          # 3. Update manifest (Universal Perl script)
+          jq --arg v "$VERSION" --arg h "$HASH" --arg u "$URL" --arg s "$SIZE" \
+             '.sidecars["exiftool"].version = $v |
+              .sidecars["exiftool"].platforms["darwin-aarch64"].url = $u | .sidecars["exiftool"].platforms["darwin-aarch64"].sha256 = $h | .sidecars["exiftool"].platforms["darwin-aarch64"].size_bytes = ($s|tonumber) |
+              .sidecars["exiftool"].platforms["darwin-x86_64"].url = $u | .sidecars["exiftool"].platforms["darwin-x86_64"].sha256 = $h | .sidecars["exiftool"].platforms["darwin-x86_64"].size_bytes = ($s|tonumber)' manifest.json > tmp.json && mv tmp.json manifest.json
+          rm exiftool.tar.gz
+
       - name: Update Meta Timestamp
         run: |
           jq '.meta.last_updated = (now | strftime("%Y-%m-%dT%H:%M:%SZ"))' manifest.json > tmp.json && mv tmp.json manifest.json
@@ -92,5 +112,5 @@ jobs:
       - name: Commit and Push Changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: Auto-update sidecars (+ Pandoc)"
+          commit_message: "chore: Auto-update sidecars (+ Pandoc, ExifTool)"
           file_pattern: manifest.json

@@ -67,9 +67,26 @@
           "size_bytes": 25764704
         }
       }
+    },
+    "exiftool": {
+      "display_name": "ExifTool",
+      "github_url": "https://exiftool.org",
+      "version": "13.54",
+      "platforms": {
+        "darwin-aarch64": {
+          "url": "https://exiftool.org/Image-ExifTool-13.54.tar.gz",
+          "sha256": "dfe612aa4a48c220591f3889c41346274c96c822e1376b3ba81e2832ac5210c4",
+          "size_bytes": 7779666
+        },
+        "darwin-x86_64": {
+          "url": "https://exiftool.org/Image-ExifTool-13.54.tar.gz",
+          "sha256": "dfe612aa4a48c220591f3889c41346274c96c822e1376b3ba81e2832ac5210c4",
+          "size_bytes": 7779666
+        }
+      }
     }
   },
   "meta": {
-    "last_updated": "2026-04-07T13:57:18Z"
+    "last_updated": "2026-04-07T14:05:40Z"
   }
 }

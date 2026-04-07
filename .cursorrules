@@ -1,0 +1,3 @@
+# Repository conventions
+
+When you finish a main task successfully (the user’s request is implemented and verified), commit the relevant changes with a clear, conventional commit message and push to `origin` on the current branch. Do this as part of closing out the task—do not wait to be asked—unless pushing is impossible (no remote, no network, or authentication failure). If push fails, say what failed and what is left un-pushed.
