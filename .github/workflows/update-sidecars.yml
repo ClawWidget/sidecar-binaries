@@ -1,0 +1,74 @@
+name: Auto-Update Sidecars
+
+on:
+  # yt-dlp: check every hour
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'manifest.json'
+
+jobs:
+  update-manifest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Update yt-dlp
+        run: |
+          LATEST_TAG=$(curl -sL https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest | jq -r .tag_name)
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+          curl -sL "https://github.com/yt-dlp/yt-dlp/releases/download/${LATEST_TAG}/SHA2-256SUMS" -o sums.txt
+          HASH=$(grep "yt-dlp_macos$" sums.txt | awk '{print $1}')
+          URL="https://github.com/yt-dlp/yt-dlp/releases/download/${LATEST_TAG}/yt-dlp_macos"
+
+          jq --arg v "$LATEST_TAG" --arg h "$HASH" --arg u "$URL" \
+            '.sidecars["yt-dlp"].version = $v |
+             .sidecars["yt-dlp"].platforms["darwin-aarch64"].url = $u |
+             .sidecars["yt-dlp"].platforms["darwin-aarch64"].sha256 = $h |
+             .sidecars["yt-dlp"].platforms["darwin-x86_64"].url = $u |
+             .sidecars["yt-dlp"].platforms["darwin-x86_64"].sha256 = $h' manifest.json > tmp.json && mv tmp.json manifest.json
+          rm sums.txt
+
+      - name: Update DuckDB
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          # Once per day on the hourly schedule (08:00 UTC); always on push / workflow_dispatch
+          if [ "$EVENT_NAME" = "schedule" ] && [ "$(date -u +%H)" != "08" ]; then
+            echo "Skipping DuckDB (scheduled runs only at 08:00 UTC; yt-dlp still updated above)."
+            exit 0
+          fi
+
+          LATEST_TAG=$(curl -sL https://api.github.com/repos/duckdb/duckdb/releases/latest | jq -r .tag_name)
+          URL="https://github.com/duckdb/duckdb/releases/download/${LATEST_TAG}/duckdb_cli-osx-universal.zip"
+
+          curl -sL "$URL" -o duckdb.zip
+          HASH=$(sha256sum duckdb.zip | awk '{print $1}')
+          SIZE=$(stat -c%s duckdb.zip)
+
+          jq --arg v "$LATEST_TAG" --arg h "$HASH" --arg u "$URL" --arg s "$SIZE" \
+            '.sidecars["duckdb"].version = $v |
+             .sidecars["duckdb"].platforms["darwin-aarch64"].url = $u |
+             .sidecars["duckdb"].platforms["darwin-aarch64"].sha256 = $h |
+             .sidecars["duckdb"].platforms["darwin-aarch64"].size_bytes = ($s | tonumber) |
+             .sidecars["duckdb"].platforms["darwin-x86_64"].url = $u |
+             .sidecars["duckdb"].platforms["darwin-x86_64"].sha256 = $h |
+             .sidecars["duckdb"].platforms["darwin-x86_64"].size_bytes = ($s | tonumber)' manifest.json > tmp.json && mv tmp.json manifest.json
+          rm duckdb.zip
+
+      - name: Update meta timestamp
+        run: |
+          jq '.meta.last_updated = (now | strftime("%Y-%m-%dT%H:%M:%SZ"))' manifest.json > tmp.json && mv tmp.json manifest.json
+
+      - name: Commit and Push Changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: Auto-update sidecars (yt-dlp ${{ env.LATEST_TAG }})"
+          file_pattern: manifest.json
