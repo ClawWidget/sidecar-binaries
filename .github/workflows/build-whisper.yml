@@ -1,0 +1,67 @@
+name: Auto-Build Whisper
+
+on:
+  schedule:
+    - cron: '15 8 * * *' # Runs daily shortly after the scraper
+  workflow_dispatch:
+
+jobs:
+  build-whisper:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout our repo
+        uses: actions/checkout@v4
+
+      - name: Get Latest Whisper Version
+        id: get_version
+        run: |
+          LATEST_TAG=$(curl -sL https://api.github.com/repos/ggml-org/whisper.cpp/releases/latest | jq -r .tag_name)
+          echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+
+      - name: Checkout whisper.cpp source
+        uses: actions/checkout@v4
+        with:
+          repository: ggml-org/whisper.cpp
+          ref: ${{ steps.get_version.outputs.tag }}
+          path: whisper-src
+
+      - name: Compile Whisper (Apple Silicon)
+        run: |
+          cd whisper-src
+          rm -rf build
+          cmake -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release
+          cp build/bin/whisper-cli ../whisper-mac-arm64
+          cd ..
+
+      - name: Create Rolling Release & Upload
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Create a continuous release tag if it doesn't exist
+          gh release view sidecar-builds || gh release create sidecar-builds -t "Automated Sidecar Builds" -n "Binaries compiled directly by GitHub Actions."
+
+          # Upload the fresh binary (clobber overwrites the old one)
+          gh release upload sidecar-builds whisper-mac-arm64 --clobber
+
+      - name: Update Manifest
+        run: |
+          VERSION="${{ steps.get_version.outputs.tag }}"
+          URL="https://github.com/${{ github.repository }}/releases/download/sidecar-builds/whisper-mac-arm64"
+
+          # macOS natively uses stat -f%z for bytes
+          HASH=$(shasum -a 256 whisper-mac-arm64 | awk '{print $1}')
+          SIZE=$(stat -f%z whisper-mac-arm64)
+
+          # We update darwin-aarch64 since this was compiled natively on an M-series server
+          jq --arg v "$VERSION" --arg h "$HASH" --arg u "$URL" --arg s "$SIZE" \
+             '.sidecars["whisper"].version = $v |
+              .sidecars["whisper"].platforms["darwin-aarch64"].url = $u | .sidecars["whisper"].platforms["darwin-aarch64"].sha256 = $h | .sidecars["whisper"].platforms["darwin-aarch64"].size_bytes = ($s|tonumber)' manifest.json > tmp.json && mv tmp.json manifest.json
+
+      - name: Commit and Push
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: Auto-build Whisper to ${{ steps.get_version.outputs.tag }}"
+          file_pattern: manifest.json
