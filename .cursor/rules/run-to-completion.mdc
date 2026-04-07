@@ -1,0 +1,11 @@
+---
+description: Continue work until done; stop only for human-only blockers
+alwaysApply: true
+---
+
+# Run tasks to completion
+
+- **Do not** stop after implementing files or saying “your turn to push / click Actions.” When the environment allows it, run the full chain yourself: commit, push, trigger CI (`gh workflow run`, etc.), watch runs, pull results, fix failures, retry.
+- **Keep going** through retries and reasonable alternatives (different flags, smaller scope, API vs UI path) until the task is verified or you hit a limit you cannot cross without a person.
+- **Escalate to a human only** when something truly requires them: missing secrets or org permissions you cannot grant, irreversible production actions they must approve, an ambiguous product decision that changes the goal, or you are blocked after genuine dead ends (no further automated path).
+- **Questions**: Ask the user only when the answer changes *what* to build or *whether* to proceed—not to offload steps you can execute (git, gh, curl, tests).
