@@ -20,22 +20,22 @@
     "duckdb": {
       "display_name": "DuckDB",
       "github_url": "https://github.com/duckdb/duckdb",
-      "version": "0.0.0",
+      "version": "v1.5.1",
       "platforms": {
         "darwin-aarch64": {
-          "url": "",
-          "sha256": "",
-          "size_bytes": 0
+          "url": "https://github.com/duckdb/duckdb/releases/download/v1.5.1/duckdb_cli-osx-universal.zip",
+          "sha256": "fa6bddb0e1ce80cb0ea40201b8f5fc1a28693b2a2aec3295ed4cfc41b770485d",
+          "size_bytes": 34804092
         },
         "darwin-x86_64": {
-          "url": "",
-          "sha256": "",
-          "size_bytes": 0
+          "url": "https://github.com/duckdb/duckdb/releases/download/v1.5.1/duckdb_cli-osx-universal.zip",
+          "sha256": "fa6bddb0e1ce80cb0ea40201b8f5fc1a28693b2a2aec3295ed4cfc41b770485d",
+          "size_bytes": 34804092
         }
       }
     }
   },
   "meta": {
-    "last_updated": "2026-04-07T13:37:11Z"
+    "last_updated": "2026-04-07T13:40:41Z"
   }
 }
