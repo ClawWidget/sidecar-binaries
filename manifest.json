@@ -101,6 +101,15 @@
           "size_bytes": 0
         }
       }
+    },
+    "tesseract": {
+      "display_name": "Tesseract OCR",
+      "github_url": "https://github.com/tesseract-ocr/tesseract",
+      "version": "0.0.0",
+      "platforms": {
+        "darwin-aarch64": { "url": "", "sha256": "", "size_bytes": 0 },
+        "darwin-x86_64": { "url": "", "sha256": "", "size_bytes": 0 }
+      }
     }
   },
   "meta": {

@@ -1,0 +1,67 @@
+name: Auto-Build Tesseract
+
+on:
+  schedule:
+    - cron: '30 8 * * *' # Runs daily after Whisper
+  workflow_dispatch:
+
+jobs:
+  build-tesseract:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install Tesseract & Bundler
+        run: |
+          brew update
+          brew install tesseract macdylibbundler
+
+          # Extract the exact version number
+          TESS_VERSION=$(tesseract --version | head -n 1 | awk '{print $2}')
+          echo "tag=$TESS_VERSION" >> $GITHUB_ENV
+
+      - name: Bundle Executable, Libraries, and Models
+        run: |
+          mkdir -p dist/libs dist/tessdata
+
+          # 1. Copy the core binary
+          cp $(brew --prefix tesseract)/bin/tesseract dist/
+
+          # 2. MAGIC STEP: Bundle the dynamic libraries and rewrite the binary's links
+          dylibbundler -od -b -x dist/tesseract -d dist/libs -p @executable_path/libs/
+
+          # 3. Download the base English OCR model (fast version)
+          curl -sL "https://github.com/tesseract-ocr/tessdata_fast/raw/main/eng.traineddata" -o dist/tessdata/eng.traineddata
+
+          # 4. Zip it into a standalone package
+          cd dist
+          zip -r ../tesseract-mac-arm64.zip ./*
+          cd ..
+
+      - name: Upload to Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view sidecar-builds || gh release create sidecar-builds -t "Automated Sidecar Builds" -n "Binaries compiled directly by GitHub Actions."
+          gh release upload sidecar-builds tesseract-mac-arm64.zip --clobber
+
+      - name: Update Manifest
+        run: |
+          VERSION="${{ env.tag }}"
+          URL="https://github.com/${{ github.repository }}/releases/download/sidecar-builds/tesseract-mac-arm64.zip"
+
+          HASH=$(shasum -a 256 tesseract-mac-arm64.zip | awk '{print $1}')
+          SIZE=$(stat -f%z tesseract-mac-arm64.zip)
+
+          jq --arg v "$VERSION" --arg h "$HASH" --arg u "$URL" --arg s "$SIZE" \
+             '.sidecars["tesseract"].version = $v |
+              .sidecars["tesseract"].platforms["darwin-aarch64"].url = $u | .sidecars["tesseract"].platforms["darwin-aarch64"].sha256 = $h | .sidecars["tesseract"].platforms["darwin-aarch64"].size_bytes = ($s|tonumber)' manifest.json > tmp.json && mv tmp.json manifest.json
+
+      - name: Commit and Push
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: Auto-build Tesseract to ${{ env.tag }}"
+          file_pattern: manifest.json
