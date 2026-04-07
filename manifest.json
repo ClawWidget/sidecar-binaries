@@ -33,6 +33,40 @@
           "size_bytes": 34804092
         }
       }
+    },
+    "ffmpeg": {
+      "display_name": "FFmpeg",
+      "github_url": "https://ffmpeg.org",
+      "version": "8.1",
+      "platforms": {
+        "darwin-aarch64": {
+          "url": "https://ffmpeg.martin-riedl.de/redirect/latest/macos/arm64/release/ffmpeg.zip",
+          "sha256": "cc3a7e0cce36c5eca6c17eeb93830984c657637a8e710dc98f19c8051201fa3a",
+          "size_bytes": 27185234
+        },
+        "darwin-x86_64": {
+          "url": "https://ffmpeg.martin-riedl.de/redirect/latest/macos/amd64/release/ffmpeg.zip",
+          "sha256": "eaa8aa619f8eccc7f548a730097f5d299cbf2d418888421c137557344d821130",
+          "size_bytes": 32970374
+        }
+      }
+    },
+    "pandoc": {
+      "display_name": "Pandoc",
+      "github_url": "https://github.com/jgm/pandoc",
+      "version": "3.9.0.2",
+      "platforms": {
+        "darwin-aarch64": {
+          "url": "https://github.com/jgm/pandoc/releases/download/3.9.0.2/pandoc-3.9.0.2-arm64-macOS.zip",
+          "sha256": "6e9eca844076bcbb599bbeebbba78a70f93b5307782b85c2c272872812c88875",
+          "size_bytes": 36687858
+        },
+        "darwin-x86_64": {
+          "url": "https://github.com/jgm/pandoc/releases/download/3.9.0.2/pandoc-3.9.0.2-x86_64-macOS.zip",
+          "sha256": "b9fbceabccbc8f34ac021a50483fc32f8160568d0b4b2c22d81bb29e3054fd82",
+          "size_bytes": 25764704
+        }
+      }
     }
   },
   "meta": {
