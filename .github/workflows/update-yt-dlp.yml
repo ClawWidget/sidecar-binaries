@@ -1,9 +1,9 @@
 name: Auto-Update yt-dlp
 
 on:
-  # Daily check — no human action required
+  # Hourly check — no human action required
   schedule:
-    - cron: '0 8 * * *' # 8 AM UTC every day
+    - cron: '0 * * * *' # minute 0 of every hour (UTC)
   # Optional: run from the Actions tab when you want an immediate refresh
   workflow_dispatch:
   # Run on every push to main except commits that only touch manifest.json (avoids bot push loops)
