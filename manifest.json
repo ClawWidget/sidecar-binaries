@@ -1,24 +1,24 @@
 {
-    "sidecars": {
-      "yt-dlp": {
-        "display_name": "yt-dlp",
-        "github_url": "https://github.com/yt-dlp/yt-dlp",
-        "version": "0.0.0",
-        "platforms": {
-          "darwin-aarch64": {
-            "url": "",
-            "sha256": "",
-            "size_bytes": 9876543
-          },
-          "darwin-x86_64": {
-            "url": "",
-            "sha256": "",
-            "size_bytes": 9876543
-          }
+  "sidecars": {
+    "yt-dlp": {
+      "display_name": "yt-dlp",
+      "github_url": "https://github.com/yt-dlp/yt-dlp",
+      "version": "2026.03.17",
+      "platforms": {
+        "darwin-aarch64": {
+          "url": "https://github.com/yt-dlp/yt-dlp/releases/download/2026.03.17/yt-dlp_macos",
+          "sha256": "e80c47b3ce712acee51d5e3d4eace2d181b44d38f1942c3a32e3c7ff53cd9ed5",
+          "size_bytes": 9876543
+        },
+        "darwin-x86_64": {
+          "url": "https://github.com/yt-dlp/yt-dlp/releases/download/2026.03.17/yt-dlp_macos",
+          "sha256": "e80c47b3ce712acee51d5e3d4eace2d181b44d38f1942c3a32e3c7ff53cd9ed5",
+          "size_bytes": 9876543
         }
       }
-    },
-    "meta": {
-      "last_updated": "2026-04-07T00:00:00Z"
     }
+  },
+  "meta": {
+    "last_updated": "2026-04-07T13:23:36Z"
   }
+}
