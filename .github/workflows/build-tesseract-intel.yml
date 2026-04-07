@@ -7,7 +7,8 @@ on:
 
 jobs:
   build-tesseract-intel:
-    runs-on: macos-13 # Intel x86_64 runners
+    # macos-13 was retired Dec 2025; Intel x86_64 is macos-15-intel until ~Aug 2027
+    runs-on: macos-15-intel
     permissions:
       contents: write
     steps:
