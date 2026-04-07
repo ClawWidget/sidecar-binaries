@@ -6,11 +6,11 @@ on:
     - cron: '0 8 * * *' # 8 AM UTC every day
   # Optional: run from the Actions tab when you want an immediate refresh
   workflow_dispatch:
-  # Run automatically when this workflow file changes on main (e.g. first setup or edits)
+  # Run on every push to main except commits that only touch manifest.json (avoids bot push loops)
   push:
     branches: [main]
-    paths:
-      - '.github/workflows/update-yt-dlp.yml'
+    paths-ignore:
+      - 'manifest.json'
 
 jobs:
   update-manifest:
