@@ -17,7 +17,7 @@ jobs:
       - name: Install Tesseract & Bundler
         run: |
           brew update
-          brew install tesseract macdylibbundler
+          brew install tesseract dylibbundler
 
           # Extract the exact version number
           TESS_VERSION=$(tesseract --version | head -n 1 | awk '{print $2}')
