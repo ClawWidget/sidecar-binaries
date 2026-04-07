@@ -105,10 +105,18 @@
     "tesseract": {
       "display_name": "Tesseract OCR",
       "github_url": "https://github.com/tesseract-ocr/tesseract",
-      "version": "0.0.0",
+      "version": "5.5.2",
       "platforms": {
-        "darwin-aarch64": { "url": "", "sha256": "", "size_bytes": 0 },
-        "darwin-x86_64": { "url": "", "sha256": "", "size_bytes": 0 }
+        "darwin-aarch64": {
+          "url": "https://github.com/ClawWidget/sidecar-binaries/releases/download/sidecar-builds/tesseract-mac-arm64.zip",
+          "sha256": "fcd47ff0f9b3f5cf3392566bc79d3332a55f0a8558bd450e626e556d0a834c0a",
+          "size_bytes": 5599008
+        },
+        "darwin-x86_64": {
+          "url": "",
+          "sha256": "",
+          "size_bytes": 0
+        }
       }
     }
   },
