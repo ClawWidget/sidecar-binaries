@@ -1,9 +1,16 @@
 name: Auto-Update yt-dlp
 
 on:
+  # Daily check — no human action required
   schedule:
-    - cron: '0 8 * * *' # Runs every day at 8 AM UTC
-  workflow_dispatch: # Gives you a button to run it manually right now
+    - cron: '0 8 * * *' # 8 AM UTC every day
+  # Optional: run from the Actions tab when you want an immediate refresh
+  workflow_dispatch:
+  # Run automatically when this workflow file changes on main (e.g. first setup or edits)
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/update-yt-dlp.yml'
 
 jobs:
   update-manifest:
