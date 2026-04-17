@@ -37,7 +37,7 @@
     "ffmpeg": {
       "display_name": "FFmpeg",
       "github_url": "https://ffmpeg.org",
-      "version": "latest",
+      "version": "8.1",
       "platforms": {
         "darwin-aarch64": {
           "url": "https://ffmpeg.martin-riedl.de/redirect/latest/macos/arm64/release/ffmpeg.zip",
@@ -71,17 +71,17 @@
     "exiftool": {
       "display_name": "ExifTool",
       "github_url": "https://exiftool.org",
-      "version": "13.56",
+      "version": "13.57",
       "platforms": {
         "darwin-aarch64": {
-          "url": "https://exiftool.org/Image-ExifTool-13.56.tar.gz",
-          "sha256": "94f265ef20f56814c143dc34d76f23c6c3527ed95863daebab92bbfff77d774f",
-          "size_bytes": 7855349
+          "url": "https://exiftool.org/Image-ExifTool-13.57.tar.gz",
+          "sha256": "58f74f5cf84350693a00c4df236fd4810e5abaf25fab2d15eaa9dcc4872d4481",
+          "size_bytes": 7933495
         },
         "darwin-x86_64": {
-          "url": "https://exiftool.org/Image-ExifTool-13.56.tar.gz",
-          "sha256": "94f265ef20f56814c143dc34d76f23c6c3527ed95863daebab92bbfff77d774f",
-          "size_bytes": 7855349
+          "url": "https://exiftool.org/Image-ExifTool-13.57.tar.gz",
+          "sha256": "58f74f5cf84350693a00c4df236fd4810e5abaf25fab2d15eaa9dcc4872d4481",
+          "size_bytes": 7933495
         }
       }
     },
@@ -121,6 +121,6 @@
     }
   },
   "meta": {
-    "last_updated": "2026-04-17T12:57:01Z"
+    "last_updated": "2026-04-17T16:43:51Z"
   }
 }
