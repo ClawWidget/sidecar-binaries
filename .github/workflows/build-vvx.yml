@@ -1,0 +1,144 @@
+name: Build vvx (VideoVortex)
+
+on:
+  schedule:
+    - cron: "20 9 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: build-vvx
+  cancel-in-progress: true
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      full_sha: ${{ steps.meta.outputs.full_sha }}
+      short_sha: ${{ steps.meta.outputs.short_sha }}
+    steps:
+      - id: meta
+        run: |
+          SHA=$(curl -sL "https://api.github.com/repos/videovortex-app/vvx/commits/main" | jq -r .sha)
+          test -n "$SHA" && test "$SHA" != "null"
+          echo "full_sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "short_sha=${SHA:0:7}" >> "$GITHUB_OUTPUT"
+
+  build-darwin-aarch64:
+    needs: resolve
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    outputs:
+      sha256: ${{ steps.pack.outputs.sha256 }}
+      size_bytes: ${{ steps.pack.outputs.size_bytes }}
+    steps:
+      - name: Checkout upstream vvx
+        uses: actions/checkout@v4
+        with:
+          repository: videovortex-app/vvx
+          ref: ${{ needs.resolve.outputs.full_sha }}
+          path: vvx-src
+
+      - name: Build and pack
+        id: pack
+        run: |
+          set -e
+          cd vvx-src
+          swift build -c release --product vvx
+          cp .build/release/vvx "$RUNNER_TEMP/vvx"
+          cd "$RUNNER_TEMP"
+          touch -t 200001010000 vvx
+          zip -j -X vvx-darwin-aarch64.zip vvx
+          echo "sha256=$(shasum -a 256 vvx-darwin-aarch64.zip | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+          echo "size_bytes=$(stat -f%z vvx-darwin-aarch64.zip)" >> "$GITHUB_OUTPUT"
+          mv vvx-darwin-aarch64.zip "$GITHUB_WORKSPACE/"
+
+      - name: Upload to sidecar-builds release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          gh release view sidecar-builds || gh release create sidecar-builds -t "Automated Sidecar Builds" -n "Binaries compiled directly by GitHub Actions."
+          gh release upload sidecar-builds vvx-darwin-aarch64.zip --clobber
+
+  build-darwin-x86_64:
+    needs: resolve
+    runs-on: macos-15-intel
+    permissions:
+      contents: write
+    outputs:
+      sha256: ${{ steps.pack.outputs.sha256 }}
+      size_bytes: ${{ steps.pack.outputs.size_bytes }}
+    steps:
+      - name: Checkout upstream vvx
+        uses: actions/checkout@v4
+        with:
+          repository: videovortex-app/vvx
+          ref: ${{ needs.resolve.outputs.full_sha }}
+          path: vvx-src
+
+      - name: Build and pack
+        id: pack
+        run: |
+          set -e
+          cd vvx-src
+          swift build -c release --product vvx
+          cp .build/release/vvx "$RUNNER_TEMP/vvx"
+          cd "$RUNNER_TEMP"
+          touch -t 200001010000 vvx
+          zip -j -X vvx-darwin-x86_64.zip vvx
+          echo "sha256=$(shasum -a 256 vvx-darwin-x86_64.zip | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+          echo "size_bytes=$(stat -f%z vvx-darwin-x86_64.zip)" >> "$GITHUB_OUTPUT"
+          mv vvx-darwin-x86_64.zip "$GITHUB_WORKSPACE/"
+
+      - name: Upload to sidecar-builds release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          gh release view sidecar-builds || gh release create sidecar-builds -t "Automated Sidecar Builds" -n "Binaries compiled directly by GitHub Actions."
+          gh release upload sidecar-builds vvx-darwin-x86_64.zip --clobber
+
+  update-manifest:
+    needs: [build-darwin-aarch64, build-darwin-x86_64, resolve]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set manifest
+        env:
+          VERSION: ${{ needs.resolve.outputs.short_sha }}
+          H1: ${{ needs.build-darwin-aarch64.outputs.sha256 }}
+          S1: ${{ needs.build-darwin-aarch64.outputs.size_bytes }}
+          H2: ${{ needs.build-darwin-x86_64.outputs.sha256 }}
+          S2: ${{ needs.build-darwin-x86_64.outputs.size_bytes }}
+        run: |
+          REPO="${{ github.repository }}"
+          U1="https://github.com/${REPO}/releases/download/sidecar-builds/vvx-darwin-aarch64.zip"
+          U2="https://github.com/${REPO}/releases/download/sidecar-builds/vvx-darwin-x86_64.zip"
+          GITHUB_URL="https://github.com/videovortex-app/vvx"
+          jq --arg v "$VERSION" --arg g "$GITHUB_URL" \
+            --arg u1 "$U1" --arg h1 "$H1" --arg s1 "$S1" \
+            --arg u2 "$U2" --arg h2 "$H2" --arg s2 "$S2" \
+            '.sidecars["vvx"] = {
+                display_name: "VVX",
+                github_url: $g,
+                version: $v,
+                platforms: {
+                  "darwin-aarch64": { url: $u1, sha256: $h1, size_bytes: ($s1|tonumber) },
+                  "darwin-x86_64": { url: $u2, sha256: $h2, size_bytes: ($s2|tonumber) }
+                }
+              }
+            | .meta.last_updated = (now | strftime("%Y-%m-%dT%H:%M:%SZ"))' manifest.json > tmp.json
+          mv tmp.json manifest.json
+
+      - name: Commit manifest
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: Update vvx sidecar (${{ needs.resolve.outputs.short_sha }})"
+          file_pattern: manifest.json
