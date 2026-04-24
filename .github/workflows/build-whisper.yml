@@ -16,9 +16,20 @@ jobs:
 
       - name: Get Latest Whisper Version
         id: get_version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          LATEST_TAG=$(curl -sL https://api.github.com/repos/ggml-org/whisper.cpp/releases/latest | jq -r .tag_name)
-          echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          api() { curl -fsSL -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$@"; }
+          LATEST_TAG=$(api "https://api.github.com/repos/ggml-org/whisper.cpp/releases/latest" | jq -r .tag_name)
+          if [ -z "$LATEST_TAG" ] || [ "$LATEST_TAG" = "null" ]; then
+            LATEST_TAG=$(api "https://api.github.com/repos/ggml-org/whisper.cpp/tags?per_page=1" | jq -r '.[0].name')
+          fi
+          if [ -z "$LATEST_TAG" ] || [ "$LATEST_TAG" = "null" ]; then
+            echo "Could not resolve whisper.cpp tag (check API / rate limit)."
+            exit 1
+          fi
+          echo "tag=$LATEST_TAG" >> "$GITHUB_OUTPUT"
 
       - name: Checkout whisper.cpp source
         uses: actions/checkout@v4
