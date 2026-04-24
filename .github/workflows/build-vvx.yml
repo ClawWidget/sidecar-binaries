@@ -36,6 +36,9 @@ jobs:
       sha256: ${{ steps.pack.outputs.sha256 }}
       size_bytes: ${{ steps.pack.outputs.size_bytes }}
     steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v4
+
       - name: Checkout upstream vvx
         uses: actions/checkout@v4
         with:
@@ -74,6 +77,9 @@ jobs:
       sha256: ${{ steps.pack.outputs.sha256 }}
       size_bytes: ${{ steps.pack.outputs.size_bytes }}
     steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v4
+
       - name: Checkout upstream vvx
         uses: actions/checkout@v4
         with:
