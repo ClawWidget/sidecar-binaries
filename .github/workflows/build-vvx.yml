@@ -121,55 +121,54 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      - name: Set manifest
+      - name: Commit and push manifest
         env:
+          BRANCH_NAME: ${{ github.ref_name }}
           VERSION: ${{ needs.resolve.outputs.short_sha }}
           H1: ${{ needs.build-darwin-aarch64.outputs.sha256 }}
           S1: ${{ needs.build-darwin-aarch64.outputs.size_bytes }}
           H2: ${{ needs.build-darwin-x86_64.outputs.sha256 }}
           S2: ${{ needs.build-darwin-x86_64.outputs.size_bytes }}
         run: |
-          REPO="${{ github.repository }}"
-          U1="https://github.com/${REPO}/releases/download/sidecar-builds/vvx-darwin-aarch64.zip"
-          U2="https://github.com/${REPO}/releases/download/sidecar-builds/vvx-darwin-x86_64.zip"
-          GITHUB_URL="https://github.com/videovortex-app/vvx"
-          jq --arg v "$VERSION" --arg g "$GITHUB_URL" \
-            --arg u1 "$U1" --arg h1 "$H1" --arg s1 "$S1" \
-            --arg u2 "$U2" --arg h2 "$H2" --arg s2 "$S2" \
-            '.sidecars["vvx"] = {
-                display_name: "VVX",
-                github_url: $g,
-                version: $v,
-                platforms: {
-                  "darwin-aarch64": { url: $u1, sha256: $h1, size_bytes: ($s1|tonumber) },
-                  "darwin-x86_64": { url: $u2, sha256: $h2, size_bytes: ($s2|tonumber) }
-                }
-              }
-            | .meta.last_updated = (now | strftime("%Y-%m-%dT%H:%M:%SZ"))' manifest.json > tmp.json
-          mv tmp.json manifest.json
-
-      - name: Commit and push manifest
-        env:
-          BRANCH_NAME: ${{ github.ref_name }}
-          VERSION: ${{ needs.resolve.outputs.short_sha }}
-        run: |
           set -euo pipefail
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          if git diff --quiet -- manifest.json; then
-            echo "No manifest changes detected."
-            exit 0
-          fi
-
-          git add manifest.json
-          git commit -m "chore: Update vvx sidecar (${VERSION})"
+          REPO="${{ github.repository }}"
+          U1="https://github.com/${REPO}/releases/download/sidecar-builds/vvx-darwin-aarch64.zip"
+          U2="https://github.com/${REPO}/releases/download/sidecar-builds/vvx-darwin-x86_64.zip"
+          GITHUB_URL="https://github.com/videovortex-app/vvx"
 
           # Retry because other workflows may update main concurrently.
+          # Rebuild manifest from latest remote each time to avoid rebase conflicts.
           for attempt in 1 2 3; do
             git fetch origin "$BRANCH_NAME"
-            git rebase "origin/$BRANCH_NAME"
+            git checkout -B "$BRANCH_NAME" "origin/$BRANCH_NAME"
+
+            jq --arg v "$VERSION" --arg g "$GITHUB_URL" \
+              --arg u1 "$U1" --arg h1 "$H1" --arg s1 "$S1" \
+              --arg u2 "$U2" --arg h2 "$H2" --arg s2 "$S2" \
+              '.sidecars["vvx"] = {
+                  display_name: "VVX",
+                  github_url: $g,
+                  version: $v,
+                  platforms: {
+                    "darwin-aarch64": { url: $u1, sha256: $h1, size_bytes: ($s1|tonumber) },
+                    "darwin-x86_64": { url: $u2, sha256: $h2, size_bytes: ($s2|tonumber) }
+                  }
+                }
+              | .meta.last_updated = (now | strftime("%Y-%m-%dT%H:%M:%SZ"))' manifest.json > tmp.json
+            mv tmp.json manifest.json
+
+            if git diff --quiet -- manifest.json; then
+              echo "No manifest changes detected."
+              exit 0
+            fi
+
+            git add manifest.json
+            git commit -m "chore: Update vvx sidecar (${VERSION})"
+
             if git push origin "HEAD:$BRANCH_NAME"; then
               echo "Push succeeded on attempt $attempt."
               exit 0
