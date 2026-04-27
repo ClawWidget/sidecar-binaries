@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Update yt-dlp
         run: |
@@ -111,16 +113,35 @@ jobs:
         run: |
           jq '.meta.last_updated = (now | strftime("%Y-%m-%dT%H:%M:%SZ"))' manifest.json > tmp.json && mv tmp.json manifest.json
 
-      # Integrate any newer commits on the remote (e.g. after a force-push) so the
-      # manifest commit is based on the current branch tip. git-auto-commit-action does
-      # not rebase; without this, push can fail with "non-fast-forward" when histories diverge.
-      - name: Rebase uncommitted work onto latest remote
-        run: |
-          git fetch origin "${{ github.ref_name }}"
-          git pull --rebase --autostash origin "${{ github.ref_name }}"
-
       - name: Commit and Push Changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore: Auto-update sidecars (+ Pandoc, ExifTool)"
-          file_pattern: manifest.json
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+          SHA_SHORT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet -- manifest.json; then
+            echo "No manifest changes detected."
+            exit 0
+          fi
+
+          git add manifest.json
+          git commit -m "chore: Update upstream sidecar manifest (${SHA_SHORT:0:7})"
+
+          # Retry because scheduled workflows may overlap with other updates to main.
+          for attempt in 1 2 3; do
+            git fetch origin "$BRANCH_NAME"
+            git rebase "origin/$BRANCH_NAME"
+            if git push origin "HEAD:$BRANCH_NAME"; then
+              echo "Push succeeded on attempt $attempt."
+              exit 0
+            fi
+            echo "Push failed on attempt $attempt, retrying..."
+            sleep 2
+          done
+
+          echo "Failed to push after retries due to remote updates."
+          exit 1
