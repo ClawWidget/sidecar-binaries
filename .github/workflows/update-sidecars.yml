@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    concurrency:
+      group: sidecar-manifest-main
+      cancel-in-progress: false
 
     steps:
       - name: Checkout Repository
