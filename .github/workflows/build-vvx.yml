@@ -119,6 +119,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Set manifest
         env:
@@ -147,16 +148,35 @@ jobs:
             | .meta.last_updated = (now | strftime("%Y-%m-%dT%H:%M:%SZ"))' manifest.json > tmp.json
           mv tmp.json manifest.json
 
-      # Sync with the latest main so the manifest commit is not based on a stale
-      # tip (other workflows, force-pushes, or race windows before push can otherwise
-      # make git push fail with "non-fast-forward").
-      - name: Rebase uncommitted work onto latest remote
+      - name: Commit and push manifest
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+          VERSION: ${{ needs.resolve.outputs.short_sha }}
         run: |
-          git fetch origin "${{ github.ref_name }}"
-          git pull --rebase --autostash origin "${{ github.ref_name }}"
+          set -euo pipefail
 
-      - name: Commit manifest
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore: Update vvx sidecar (${{ needs.resolve.outputs.short_sha }})"
-          file_pattern: manifest.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet -- manifest.json; then
+            echo "No manifest changes detected."
+            exit 0
+          fi
+
+          git add manifest.json
+          git commit -m "chore: Update vvx sidecar (${VERSION})"
+
+          # Retry because other workflows may update main concurrently.
+          for attempt in 1 2 3; do
+            git fetch origin "$BRANCH_NAME"
+            git rebase "origin/$BRANCH_NAME"
+            if git push origin "HEAD:$BRANCH_NAME"; then
+              echo "Push succeeded on attempt $attempt."
+              exit 0
+            fi
+            echo "Push failed on attempt $attempt, retrying..."
+            sleep 2
+          done
+
+          echo "Failed to push after retries due to remote updates."
+          exit 1
