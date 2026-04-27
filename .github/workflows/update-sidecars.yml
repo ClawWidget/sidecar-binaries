@@ -109,6 +109,14 @@ jobs:
         run: |
           jq '.meta.last_updated = (now | strftime("%Y-%m-%dT%H:%M:%SZ"))' manifest.json > tmp.json && mv tmp.json manifest.json
 
+      # Integrate any newer commits on the remote (e.g. after a force-push) so the
+      # manifest commit is based on the current branch tip. git-auto-commit-action does
+      # not rebase; without this, push can fail with "non-fast-forward" when histories diverge.
+      - name: Rebase uncommitted work onto latest remote
+        run: |
+          git fetch origin "${{ github.ref_name }}"
+          git pull --rebase --autostash origin "${{ github.ref_name }}"
+
       - name: Commit and Push Changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
