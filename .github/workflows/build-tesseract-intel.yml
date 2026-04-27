@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Install Tesseract & Bundler
         run: |
@@ -40,22 +42,44 @@ jobs:
           gh release view sidecar-builds || gh release create sidecar-builds -t "Automated Sidecar Builds" -n "Binaries compiled directly by GitHub Actions."
           gh release upload sidecar-builds tesseract-mac-x86_64.zip --clobber
 
-      - name: Update Manifest
+      - name: Commit and push manifest
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+          VERSION: ${{ env.tag }}
         run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           URL="https://github.com/${{ github.repository }}/releases/download/sidecar-builds/tesseract-mac-x86_64.zip"
           HASH=$(shasum -a 256 tesseract-mac-x86_64.zip | awk '{print $1}')
           SIZE=$(stat -f%z tesseract-mac-x86_64.zip)
 
-          jq --arg h "$HASH" --arg u "$URL" --arg s "$SIZE" \
-             '.sidecars["tesseract"].platforms["darwin-x86_64"].url = $u | .sidecars["tesseract"].platforms["darwin-x86_64"].sha256 = $h | .sidecars["tesseract"].platforms["darwin-x86_64"].size_bytes = ($s|tonumber)' manifest.json > tmp.json &&           mv tmp.json manifest.json
+          for attempt in 1 2 3; do
+            git fetch origin "$BRANCH_NAME"
+            git checkout -B "$BRANCH_NAME" "origin/$BRANCH_NAME"
 
-      - name: Rebase uncommitted work onto latest remote
-        run: |
-          git fetch origin "${{ github.ref_name }}"
-          git pull --rebase --autostash origin "${{ github.ref_name }}"
+            jq --arg h "$HASH" --arg u "$URL" --arg s "$SIZE" \
+               '.sidecars["tesseract"].platforms["darwin-x86_64"].url = $u | .sidecars["tesseract"].platforms["darwin-x86_64"].sha256 = $h | .sidecars["tesseract"].platforms["darwin-x86_64"].size_bytes = ($s|tonumber)' manifest.json > tmp.json
+            mv tmp.json manifest.json
 
-      - name: Commit and Push
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore: Auto-build Tesseract (Intel) to ${{ env.tag }}"
-          file_pattern: manifest.json
+            if git diff --quiet -- manifest.json; then
+              echo "No manifest changes detected."
+              exit 0
+            fi
+
+            git add manifest.json
+            git commit -m "chore: Auto-build Tesseract (Intel) to ${VERSION}"
+
+            if git push origin "HEAD:$BRANCH_NAME"; then
+              echo "Push succeeded on attempt $attempt."
+              exit 0
+            fi
+
+            echo "Push failed on attempt $attempt, retrying..."
+            sleep 2
+          done
+
+          echo "Failed to push after retries due to remote updates."
+          exit 1
