@@ -1,4 +1,6 @@
-name: Auto-Update Sidecars
+# VVX, Whisper, Tesseract, and similar are updated by their own workflows (e.g. build-vvx.yml).
+# This one only syncs version/hash entries for upstream release artifacts.
+name: Upstream sidecar manifest (FFmpeg, yt-dlp, DuckDB, Pandoc, ExifTool)
 
 on:
   schedule:
