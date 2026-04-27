@@ -69,7 +69,12 @@ jobs:
           # We update darwin-aarch64 since this was compiled natively on an M-series server
           jq --arg v "$VERSION" --arg h "$HASH" --arg u "$URL" --arg s "$SIZE" \
              '.sidecars["whisper"].version = $v |
-              .sidecars["whisper"].platforms["darwin-aarch64"].url = $u | .sidecars["whisper"].platforms["darwin-aarch64"].sha256 = $h | .sidecars["whisper"].platforms["darwin-aarch64"].size_bytes = ($s|tonumber)' manifest.json > tmp.json && mv tmp.json manifest.json
+              .sidecars["whisper"].platforms["darwin-aarch64"].url = $u | .sidecars["whisper"].platforms["darwin-aarch64"].sha256 = $h | .sidecars["whisper"].platforms["darwin-aarch64"].size_bytes = ($s|tonumber)' manifest.json > tmp.json &&           mv tmp.json manifest.json
+
+      - name: Rebase uncommitted work onto latest remote
+        run: |
+          git fetch origin "${{ github.ref_name }}"
+          git pull --rebase --autostash origin "${{ github.ref_name }}"
 
       - name: Commit and Push
         uses: stefanzweifel/git-auto-commit-action@v5

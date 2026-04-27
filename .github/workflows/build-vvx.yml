@@ -147,6 +147,14 @@ jobs:
             | .meta.last_updated = (now | strftime("%Y-%m-%dT%H:%M:%SZ"))' manifest.json > tmp.json
           mv tmp.json manifest.json
 
+      # Sync with the latest main so the manifest commit is not based on a stale
+      # tip (other workflows, force-pushes, or race windows before push can otherwise
+      # make git push fail with "non-fast-forward").
+      - name: Rebase uncommitted work onto latest remote
+        run: |
+          git fetch origin "${{ github.ref_name }}"
+          git pull --rebase --autostash origin "${{ github.ref_name }}"
+
       - name: Commit manifest
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
