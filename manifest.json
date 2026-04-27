@@ -122,22 +122,22 @@
     "vvx": {
       "display_name": "VVX",
       "github_url": "https://github.com/videovortex-app/vvx",
-      "version": "19ae50f",
+      "version": "b32cdf4",
       "platforms": {
         "darwin-aarch64": {
           "url": "https://github.com/ClawWidget/sidecar-binaries/releases/download/sidecar-builds/vvx-darwin-aarch64.zip",
-          "sha256": "e74718fdfb899354b30c54c4073808c9f70a9eb7702acade5b0ca2657a24cb45",
-          "size_bytes": 1785704
+          "sha256": "aab7041621ef7eca8017ac0601170157af9e8187ef4587a8bcdbafd7980de842",
+          "size_bytes": 1808414
         },
         "darwin-x86_64": {
           "url": "https://github.com/ClawWidget/sidecar-binaries/releases/download/sidecar-builds/vvx-darwin-x86_64.zip",
-          "sha256": "cfad01f1cd85a693c75c65dfa0e71e7a18e712fc7a15bdbeb6a93b838dbabf02",
-          "size_bytes": 1843767
+          "sha256": "da2d81f62437be6c391fcc780c8c02c2a1e05b256983d9c7031b2f4c36b36ec3",
+          "size_bytes": 1865174
         }
       }
     }
   },
   "meta": {
-    "last_updated": "2026-04-27T13:17:50Z"
+    "last_updated": "2026-04-27T15:08:19Z"
   }
 }
