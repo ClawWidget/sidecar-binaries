@@ -37,7 +37,7 @@
     "ffmpeg": {
       "display_name": "FFmpeg",
       "github_url": "https://ffmpeg.org",
-      "version": "latest",
+      "version": "8.1",
       "platforms": {
         "darwin-aarch64": {
           "url": "https://ffmpeg.martin-riedl.de/redirect/latest/macos/arm64/release/ffmpeg.zip",
@@ -138,6 +138,6 @@
     }
   },
   "meta": {
-    "last_updated": "2026-04-29T10:49:46Z"
+    "last_updated": "2026-04-29T13:23:11Z"
   }
 }
