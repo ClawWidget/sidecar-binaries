@@ -126,18 +126,18 @@
       "platforms": {
         "darwin-aarch64": {
           "url": "https://github.com/ClawWidget/sidecar-binaries/releases/download/sidecar-builds/vvx-darwin-aarch64.zip",
-          "sha256": "31129683b07b6d2cb924d0cec015a6df5151d520fae13234cf642ecf99eb3376",
-          "size_bytes": 1816117
+          "sha256": "e601196839c054733cf67e2a4c8de464c96e1d711792ae49be8c75ebc3077980",
+          "size_bytes": 1816141
         },
         "darwin-x86_64": {
           "url": "https://github.com/ClawWidget/sidecar-binaries/releases/download/sidecar-builds/vvx-darwin-x86_64.zip",
-          "sha256": "d8032bfc1f4fd1ba648d8e574423f5948f2c736976fd1ce8c71c73c6bdcffdcc",
-          "size_bytes": 1873250
+          "sha256": "11030ed620e528416e1480e3870becb69150aaa293b4cf6b293c53ff3f996e6d",
+          "size_bytes": 1873287
         }
       }
     }
   },
   "meta": {
-    "last_updated": "2026-05-09T09:08:21Z"
+    "last_updated": "2026-05-09T10:05:00Z"
   }
 }
