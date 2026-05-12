@@ -109,7 +109,7 @@
       "platforms": {
         "darwin-aarch64": {
           "url": "https://github.com/ClawWidget/sidecar-binaries/releases/download/sidecar-builds/tesseract-mac-arm64.zip",
-          "sha256": "9a9c096c172af317a1121f4ad46405b3169795b402b4a728ff1391faefb145da",
+          "sha256": "6f49f373bfbb0c054a710fb14555fabb6aa82b001fbad08c9884c2ce05120ad6",
           "size_bytes": 5600109
         },
         "darwin-x86_64": {
