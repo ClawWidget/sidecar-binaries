@@ -41,8 +41,8 @@
       "platforms": {
         "darwin-aarch64": {
           "url": "https://ffmpeg.martin-riedl.de/redirect/latest/macos/arm64/release/ffmpeg.zip",
-          "sha256": "cc3a7e0cce36c5eca6c17eeb93830984c657637a8e710dc98f19c8051201fa3a",
-          "size_bytes": 27185234
+          "sha256": "a05b1a47bb3ac89a95a55eec713f8bbb347051bb07015f3b7d08fb62ed81a21e",
+          "size_bytes": 27582786
         },
         "darwin-x86_64": {
           "url": "https://ffmpeg.martin-riedl.de/redirect/latest/macos/amd64/release/ffmpeg.zip",
@@ -138,6 +138,6 @@
     }
   },
   "meta": {
-    "last_updated": "2026-05-14T11:12:28Z"
+    "last_updated": "2026-05-14T13:45:25Z"
   }
 }
