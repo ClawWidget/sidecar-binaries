@@ -46,8 +46,8 @@
         },
         "darwin-x86_64": {
           "url": "https://ffmpeg.martin-riedl.de/redirect/latest/macos/amd64/release/ffmpeg.zip",
-          "sha256": "eaa8aa619f8eccc7f548a730097f5d299cbf2d418888421c137557344d821130",
-          "size_bytes": 32970374
+          "sha256": "8cb711bfa6f66033112d708dc275220419d0fdb49c5b752f8db25f11a92d321f",
+          "size_bytes": 33495873
         }
       }
     },
@@ -138,6 +138,6 @@
     }
   },
   "meta": {
-    "last_updated": "2026-05-14T13:45:25Z"
+    "last_updated": "2026-05-14T17:41:59Z"
   }
 }
