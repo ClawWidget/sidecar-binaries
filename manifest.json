@@ -3,16 +3,16 @@
     "yt-dlp": {
       "display_name": "yt-dlp",
       "github_url": "https://github.com/yt-dlp/yt-dlp",
-      "version": "2026.03.17",
+      "version": "null",
       "platforms": {
         "darwin-aarch64": {
-          "url": "https://github.com/yt-dlp/yt-dlp/releases/download/2026.03.17/yt-dlp_macos",
-          "sha256": "e80c47b3ce712acee51d5e3d4eace2d181b44d38f1942c3a32e3c7ff53cd9ed5",
+          "url": "https://github.com/yt-dlp/yt-dlp/releases/download/null/yt-dlp_macos",
+          "sha256": "",
           "size_bytes": 9876543
         },
         "darwin-x86_64": {
-          "url": "https://github.com/yt-dlp/yt-dlp/releases/download/2026.03.17/yt-dlp_macos",
-          "sha256": "e80c47b3ce712acee51d5e3d4eace2d181b44d38f1942c3a32e3c7ff53cd9ed5",
+          "url": "https://github.com/yt-dlp/yt-dlp/releases/download/null/yt-dlp_macos",
+          "sha256": "",
           "size_bytes": 9876543
         }
       }
@@ -20,17 +20,17 @@
     "duckdb": {
       "display_name": "DuckDB",
       "github_url": "https://github.com/duckdb/duckdb",
-      "version": "v1.5.3",
+      "version": "null",
       "platforms": {
         "darwin-aarch64": {
-          "url": "https://github.com/duckdb/duckdb/releases/download/v1.5.3/duckdb_cli-osx-universal.zip",
-          "sha256": "ae799f106aca1bb740b0406448f13ba91558d59197475cb6a0f349db6e17721a",
-          "size_bytes": 34805687
+          "url": "https://github.com/duckdb/duckdb/releases/download/null/duckdb_cli-osx-universal.zip",
+          "sha256": "0019dfc4b32d63c1392aa264aed2253c1e0c2fb09216f8e2cc269bbfb8bb49b5",
+          "size_bytes": 9
         },
         "darwin-x86_64": {
-          "url": "https://github.com/duckdb/duckdb/releases/download/v1.5.3/duckdb_cli-osx-universal.zip",
-          "sha256": "ae799f106aca1bb740b0406448f13ba91558d59197475cb6a0f349db6e17721a",
-          "size_bytes": 34805687
+          "url": "https://github.com/duckdb/duckdb/releases/download/null/duckdb_cli-osx-universal.zip",
+          "sha256": "0019dfc4b32d63c1392aa264aed2253c1e0c2fb09216f8e2cc269bbfb8bb49b5",
+          "size_bytes": 9
         }
       }
     },
@@ -138,6 +138,6 @@
     }
   },
   "meta": {
-    "last_updated": "2026-05-21T17:50:14Z"
+    "last_updated": "2026-05-21T21:21:27Z"
   }
 }
