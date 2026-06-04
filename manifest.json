@@ -54,17 +54,17 @@
     "pandoc": {
       "display_name": "Pandoc",
       "github_url": "https://github.com/jgm/pandoc",
-      "version": "3.9.0.2",
+      "version": "3.10",
       "platforms": {
         "darwin-aarch64": {
-          "url": "https://github.com/jgm/pandoc/releases/download/3.9.0.2/pandoc-3.9.0.2-arm64-macOS.zip",
-          "sha256": "6e9eca844076bcbb599bbeebbba78a70f93b5307782b85c2c272872812c88875",
-          "size_bytes": 36687858
+          "url": "https://github.com/jgm/pandoc/releases/download/3.10/pandoc-3.10-arm64-macOS.zip",
+          "sha256": "d9cad01d96ae774a0dc8c8c45bb1ad3e4c5ff2cc2e24f45958f5f9b7974aee34",
+          "size_bytes": 41511397
         },
         "darwin-x86_64": {
-          "url": "https://github.com/jgm/pandoc/releases/download/3.9.0.2/pandoc-3.9.0.2-x86_64-macOS.zip",
-          "sha256": "b9fbceabccbc8f34ac021a50483fc32f8160568d0b4b2c22d81bb29e3054fd82",
-          "size_bytes": 25764704
+          "url": "https://github.com/jgm/pandoc/releases/download/3.10/pandoc-3.10-x86_64-macOS.zip",
+          "sha256": "6334f4d9af7c9e37e761dfad56fa5507685f6d29724ebf31c4be6d5c654a3161",
+          "size_bytes": 25867412
         }
       }
     },
@@ -138,6 +138,6 @@
     }
   },
   "meta": {
-    "last_updated": "2026-06-04T14:35:07Z"
+    "last_updated": "2026-06-04T18:08:33Z"
   }
 }
