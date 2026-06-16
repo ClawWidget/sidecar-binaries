@@ -88,12 +88,12 @@
     "whisper": {
       "display_name": "Whisper.cpp",
       "github_url": "https://github.com/ggml-org/whisper.cpp",
-      "version": "v1.8.6",
+      "version": "v1.8.7",
       "platforms": {
         "darwin-aarch64": {
           "url": "https://github.com/ClawWidget/sidecar-binaries/releases/download/sidecar-builds/whisper-mac-arm64",
-          "sha256": "5845e9f5f92c9a8cdd20ac09998d7ac48e9a47117bb31aea6b6740c0eaa6b7d8",
-          "size_bytes": 827608
+          "sha256": "bb2aaea904ff4e03803b5910ba10e675bc05ff22db453a14bf4b9adbe11f94a9",
+          "size_bytes": 827896
         },
         "darwin-x86_64": {
           "url": "",
