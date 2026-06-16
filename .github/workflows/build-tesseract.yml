@@ -1,8 +1,7 @@
 name: Auto-Build Tesseract
 
+# DORMANT (2026-06-16): automated triggers removed — project inactive.
 on:
-  schedule:
-    - cron: '30 8 * * *' # Runs daily after Whisper
   workflow_dispatch:
 
 jobs:

@@ -2,9 +2,9 @@
 # This one only syncs version/hash entries for upstream release artifacts.
 name: Upstream sidecar manifest (FFmpeg, yt-dlp, DuckDB, Pandoc, ExifTool)
 
+# DORMANT (2026-06-16): automated triggers removed — project inactive.
+# Re-enable by restoring schedule/workflow_dispatch below.
 on:
-  schedule:
-    - cron: '0 */4 * * *'
   workflow_dispatch:
 
 jobs:

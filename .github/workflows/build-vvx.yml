@@ -1,12 +1,7 @@
 name: Build vvx (VideoVortex)
 
+# DORMANT (2026-06-16): automated triggers removed — project inactive.
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/build-vvx.yml"
-  schedule:
-    - cron: "0 9 * * *"
   workflow_dispatch:
 
 concurrency:

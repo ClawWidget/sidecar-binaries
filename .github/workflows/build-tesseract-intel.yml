@@ -1,8 +1,7 @@
 name: Auto-Build Tesseract (Intel)
 
+# DORMANT (2026-06-16): automated triggers removed — project inactive.
 on:
-  schedule:
-    - cron: '45 8 * * *' # Runs 15 mins after the ARM build
   workflow_dispatch:
 
 jobs:

@@ -1,8 +1,7 @@
 name: Auto-Build Whisper
 
+# DORMANT (2026-06-16): automated triggers removed — project inactive.
 on:
-  schedule:
-    - cron: '15 8 * * *' # Runs daily shortly after the scraper
   workflow_dispatch:
 
 jobs:
